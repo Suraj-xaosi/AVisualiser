@@ -1,9 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
-
+import playerReducer from "./slices/playerSlice";
+import playListReducer from "./slices/playlistSlice"
 export const createStore = () => {
   return configureStore({
     reducer: {
-     
+      player: playerReducer,
+      playList: playListReducer
+
     },
   });
 };

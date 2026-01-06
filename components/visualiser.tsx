@@ -1,12 +1,12 @@
 "use client";
-import Home from "../components/home"
-/*
-import AudioInput from "@/components/audioInput";
+
 import { useAppSelector } from "@/store/hooks";
 import { useRef } from "react";
 
-export default function Landing() {
-  const audiourl=useAppSelector((state) => state.player.currentTrackUrl);
+import { useEffect } from "react";
+
+export default function AudioVisualizer() {
+  const audiourl = useAppSelector((state) => state.player.trackUrl);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -14,28 +14,41 @@ export default function Landing() {
   const analyserRef = useRef<AnalyserNode | null>(null);
   const dataArrayRef = useRef<Uint8Array | null>(null);
   const animationRef = useRef<number | null>(null);
- 
+
+  // Keep audio src in sync
+  useEffect(() => {
     if (audioRef.current) {
       audioRef.current.src = audiourl || "";
     }
+    // Stop animation if no audio
+    if (!audiourl && animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+    }
+  }, [audiourl]);
+
+  // Clean up audio context on unmount
+  useEffect(() => {
+    return () => {
+      if (audioCtxRef.current) {
+        audioCtxRef.current.close();
+      }
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, []);
 
   const startVisualizer = async () => {
     if (!audioRef.current || !canvasRef.current) return;
 
     if (!audioCtxRef.current) {
       audioCtxRef.current = new AudioContext();
-
       const source = audioCtxRef.current.createMediaElementSource(audioRef.current);
-
       analyserRef.current = audioCtxRef.current.createAnalyser();
       analyserRef.current.fftSize = 256;
-
       source.connect(analyserRef.current);
       analyserRef.current.connect(audioCtxRef.current.destination);
-
-      dataArrayRef.current = new Uint8Array(
-        analyserRef.current.frequencyBinCount
-      );
+      dataArrayRef.current = new Uint8Array(analyserRef.current.frequencyBinCount);
     }
 
     await audioCtxRef.current.resume();
@@ -44,57 +57,36 @@ export default function Landing() {
   };
 
   const draw = () => {
-    if (
-      !canvasRef.current ||
-      !analyserRef.current ||
-      !dataArrayRef.current
-    )
-      return;
-
+    if (!canvasRef.current || !analyserRef.current || !dataArrayRef.current) return;
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d")!;
     const WIDTH = canvas.width;
     const HEIGHT = canvas.height;
     //@ts-ignore
     analyserRef.current.getByteFrequencyData(dataArrayRef.current);
-
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
-
     const barWidth = WIDTH / dataArrayRef.current.length;
     let x = 0;
-
     for (let i = 0; i < dataArrayRef.current.length; i++) {
       const barHeight = dataArrayRef.current[i];
-
       ctx.fillStyle = `rgb(${barHeight + 80}, 60, 120)`;
       ctx.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
-
       x += barWidth;
     }
-
     animationRef.current = requestAnimationFrame(draw);
   };
 
   return (
-    <div style={{ padding: 20 }}>
-      <AudioInput />
-
-      <br />
-
-      <audio ref={audioRef} controls />
-
-      <br />
-
-      <canvas ref={canvasRef} width={600} height={300} />
-
-      <br />
-
-      <button onClick={startVisualizer}>Start Visualizer</button>
+    <div className="flex flex-col items-center justify-center gap-6 p-8 bg-white/80 rounded-xl shadow-lg w-full max-w-2xl mx-auto">
+      <audio ref={audioRef} controls className="w-full max-w-md mb-2" />
+      <canvas ref={canvasRef} width={600} height={300} className="rounded-lg border border-purple-200 shadow-md bg-white" />
+      <button
+        onClick={startVisualizer}
+        className="mt-2 px-6 py-2 bg-gradient-to-r from-purple-500 to-indigo-400 text-white rounded-lg font-semibold shadow hover:from-purple-600 hover:to-indigo-500 transition disabled:opacity-50"
+        disabled={!audiourl}
+      >
+        Start Visualizer
+      </button>
     </div>
   );
-}
-*/
-export default function Landing(){
-  
-  return <Home/>
 }
