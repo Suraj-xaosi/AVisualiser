@@ -1,11 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 import playerReducer from "./slices/playerSlice";
 import playListReducer from "./slices/playlistSlice"
+import showAudioInputReducer from "./slices/showAudioInputSlice";
 export const createStore = () => {
   return configureStore({
     reducer: {
       player: playerReducer,
-      playList: playListReducer
+      playList: playListReducer,
+      showAudioInput: showAudioInputReducer
+      
 
     },
   });
