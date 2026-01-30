@@ -64,6 +64,7 @@ export default function Visualiser() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
+
   // Visualizer logic
   const startVisualizer = async () => {
     if (!audioRef.current || !canvasRef.current) return;
@@ -81,6 +82,7 @@ export default function Visualiser() {
     draw();
   };
 
+  // Draw function uses theme colors
   const draw = () => {
     if (!canvasRef.current || !analyserRef.current || !dataArrayRef.current) return;
     const canvas = canvasRef.current;
@@ -102,7 +104,15 @@ export default function Visualiser() {
     animationRef.current = requestAnimationFrame(draw);
   };
 
-  // Fullscreen canvas sizing
+ 
+  useEffect(() => {
+    // Only redraw if visualizer is running
+    if (analyserRef.current && canvasRef.current && dataArrayRef.current && animationRef.current) {
+      draw();
+    }
+  }, [theme.visualizerBgColor, theme.visualizerBarColor]);
+
+  // continueous Fullscreen 
   useEffect(() => {
     const resize = () => {
       if (canvasRef.current) {
