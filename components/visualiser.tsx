@@ -2,12 +2,16 @@
 
 "use client";
 
-import { useAppSelector } from "@/store/hooks";
+import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { useRef, useEffect, useState } from "react";
-
 export default function Visualiser() {
   const audiourl = useAppSelector((state) => state.player.trackUrl);
+  const playList = useAppSelector((state) => state.playList);
   const theme = useAppSelector((state) => state.theme);
+
+  const dispatch = useAppDispatch();
+
+  const { setTrack } = require("@/store/slices/playerSlice");
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -19,6 +23,7 @@ export default function Visualiser() {
 
   const [showControls, setShowControls] = useState(false);
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
 
   // show/hide controls
   const revealControls = () => {
@@ -37,6 +42,7 @@ export default function Visualiser() {
     }
   }, [audiourl]);
 
+
   // Cleanup
   useEffect(() => {
     return () => {
@@ -45,6 +51,7 @@ export default function Visualiser() {
       if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current);
     };
   }, []);
+
 
   // Spacebar control
   useEffect(() => {
@@ -65,6 +72,7 @@ export default function Visualiser() {
   }, []);
 
 
+
   // Visualizer logic
   const startVisualizer = async () => {
     if (!audioRef.current || !canvasRef.current) return;
@@ -82,7 +90,29 @@ export default function Visualiser() {
     draw();
   };
 
-  // Draw function uses theme colors
+
+  // Play next track when current ends
+  const handleAudioEnded = () => {
+    // Find current track index in playlist
+    const idx = playList.findIndex(
+      (t) => t.trackUrl === audiourl && t.trackUrl !== null
+    );
+    // Find next track with valid url
+    for (let i = idx + 1; i < playList.length; i++) {
+      if (playList[i].trackUrl) {
+        dispatch(setTrack({
+          trackName: playList[i].trackName,
+          trackUrl: playList[i].trackUrl,
+          isPlaying: true,
+        }));
+        return;
+      }
+    }
+    // If no next track, do nothing (or loop to first...)
+  };
+
+
+  // Drawing engine
   const draw = () => {
     if (!canvasRef.current || !analyserRef.current || !dataArrayRef.current) return;
     const canvas = canvasRef.current;
@@ -104,7 +134,6 @@ export default function Visualiser() {
     animationRef.current = requestAnimationFrame(draw);
   };
 
- 
   useEffect(() => {
     // Only redraw if visualizer is running
     if (analyserRef.current && canvasRef.current && dataArrayRef.current && animationRef.current) {
@@ -112,7 +141,8 @@ export default function Visualiser() {
     }
   }, [theme.visualizerBgColor, theme.visualizerBarColor]);
 
-  // continueous Fullscreen 
+
+  // continueous sizing 
   useEffect(() => {
     const resize = () => {
       if (canvasRef.current) {
@@ -126,6 +156,7 @@ export default function Visualiser() {
     window.addEventListener("resize", resize);
     return () => window.removeEventListener("resize", resize);
   }, []);
+
 
   // Fullscreen handler
   const handleFullscreen = () => {
@@ -187,6 +218,7 @@ export default function Visualiser() {
             ref={audioRef}
             controls
             onPlay={startVisualizer}
+            onEnded={handleAudioEnded}
             className="w-full h-8 opacity-90"
             style={{ accentColor: theme.buttonBgColor, background: theme.listColor, color: theme.listColor, borderRadius: 8 }}
           />
