@@ -1,11 +1,13 @@
 
+
 "use client";
 
 import { useAppSelector } from "@/store/hooks";
 import { useRef, useEffect, useState } from "react";
 
-export default function AudioVisualizer() {
+export default function Visualiser() {
   const audiourl = useAppSelector((state) => state.player.trackUrl);
+  const theme = useAppSelector((state) => state.theme);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -18,58 +20,39 @@ export default function AudioVisualizer() {
   const [showControls, setShowControls] = useState(false);
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  /* -------------------- helpers -------------------- */
-
+  // show/hide controls
   const revealControls = () => {
     setShowControls(true);
-
-    if (hideTimeoutRef.current) {
-      clearTimeout(hideTimeoutRef.current);
-    }
-
-    hideTimeoutRef.current = setTimeout(() => {
-      setShowControls(false);
-    }, 3000);
+    if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current);
+    hideTimeoutRef.current = setTimeout(() => setShowControls(false), 3000);
   };
 
-  /* -------------------- sync audio src -------------------- */
-
+  // Sync audio src
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.src = audiourl || "";
     }
-
     if (!audiourl && animationRef.current) {
       cancelAnimationFrame(animationRef.current);
     }
   }, [audiourl]);
 
-  /* -------------------- cleanup -------------------- */
-
+  // Cleanup
   useEffect(() => {
     return () => {
-      if (audioCtxRef.current) {
-        audioCtxRef.current.close();
-      }
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-      if (hideTimeoutRef.current) {
-        clearTimeout(hideTimeoutRef.current);
-      }
+      if (audioCtxRef.current) audioCtxRef.current.close();
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
+      if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current);
     };
   }, []);
 
-  /* -------------------- spacebar control -------------------- */
-
+  // Spacebar control
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.code === "Space") {
         e.preventDefault();
         revealControls();
-
         if (!audioRef.current) return;
-
         if (audioRef.current.paused) {
           startVisualizer();
         } else {
@@ -77,79 +60,98 @@ export default function AudioVisualizer() {
         }
       }
     };
-
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
-  /* -------------------- visualizer -------------------- */
-
+  // Visualizer logic
   const startVisualizer = async () => {
     if (!audioRef.current || !canvasRef.current) return;
-
     if (!audioCtxRef.current) {
       audioCtxRef.current = new AudioContext();
-
-      const source =
-        audioCtxRef.current.createMediaElementSource(audioRef.current);
-
+      const source = audioCtxRef.current.createMediaElementSource(audioRef.current);
       analyserRef.current = audioCtxRef.current.createAnalyser();
       analyserRef.current.fftSize = 256;
-
       source.connect(analyserRef.current);
       analyserRef.current.connect(audioCtxRef.current.destination);
-
-      dataArrayRef.current = new Uint8Array(
-        analyserRef.current.frequencyBinCount
-      );
+      dataArrayRef.current = new Uint8Array(analyserRef.current.frequencyBinCount);
     }
-
     await audioCtxRef.current.resume();
     audioRef.current.play();
     draw();
   };
 
   const draw = () => {
-    if (!canvasRef.current || !analyserRef.current || !dataArrayRef.current)
-      return;
-
+    if (!canvasRef.current || !analyserRef.current || !dataArrayRef.current) return;
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d")!;
     const WIDTH = canvas.width;
     const HEIGHT = canvas.height;
     //@ts-ignore
     analyserRef.current.getByteFrequencyData(dataArrayRef.current);
-
-    ctx.clearRect(0, 0, WIDTH, HEIGHT);
-
+    ctx.fillStyle = theme.visualizerBgColor;
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
     const barWidth = WIDTH / dataArrayRef.current.length;
     let x = 0;
-
     for (let i = 0; i < dataArrayRef.current.length; i++) {
-      const barHeight = dataArrayRef.current[i];
-      ctx.fillStyle = `rgb(${barHeight + 80}, 60, 120)`;
+      const barHeight = dataArrayRef.current[i] * 2.3;
+      ctx.fillStyle = theme.visualizerBarColor;
       ctx.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
       x += barWidth;
     }
-
     animationRef.current = requestAnimationFrame(draw);
   };
 
-  /* -------------------- render -------------------- */
+  // Fullscreen canvas sizing
+  useEffect(() => {
+    const resize = () => {
+      if (canvasRef.current) {
+        //@ts-ignore
+        canvasRef.current.width = window.innerWidth;
+        //@ts-ignore
+        canvasRef.current.height = window.innerHeight;
+      }
+    };
+    resize();
+    window.addEventListener("resize", resize);
+    return () => window.removeEventListener("resize", resize);
+  }, []);
+
+  // Fullscreen handler
+  const handleFullscreen = () => {
+    if (canvasRef.current && canvasRef.current.requestFullscreen) {
+      canvasRef.current.requestFullscreen();
+    }
+  };
 
   return (
     <div
-      className="fixed inset-0 z-10 bg-gradient-to-br from-purple-50 to-indigo-100"
-      style={{ width: "100vw", height: "100vh" }}
+      className="fixed inset-0 z-10"
+      style={{ width: "100vw", height: "100vh", background: theme.visualizerBgColor, overflow: "hidden" }}
       onMouseMove={revealControls}
     >
       {/* Visualizer */}
       <canvas
         ref={canvasRef}
-        width={window.innerWidth}
-        height={window.innerHeight}
-        className="w-full h-full"
+        className="w-full h-full block"
+        style={{ display: "block", width: "100vw", height: "100vh" }}
       />
+
+      {/* Fullscreen button */}
+      <button
+        onClick={handleFullscreen}
+        className="fixed top-4 left-4 z-50 rounded-full p-2 shadow-lg hover:scale-110 transition"
+        style={{
+          fontSize: 22,
+          background: theme.visualizerBgColor + 'CC',
+          color: theme.textColor,
+          boxShadow: '0 2px 8px 0 #0002',
+        }}
+        title="Fullscreen visualiser"
+        aria-label="Fullscreen visualiser"
+      >
+        ⛶
+      </button>
 
       {/* Floating audio controls */}
       <div
@@ -165,20 +167,18 @@ export default function AudioVisualizer() {
         `}
         style={{ zIndex: 50 }}
       >
-        <div className="
-          backdrop-blur-md bg-black/40
-          rounded-2xl px-4 py-2
-          shadow-2xl
-        ">
+        <div
+          className="backdrop-blur-md rounded-2xl px-4 py-2 shadow-2xl "
+          style={{
+            background: theme.sidebarBgColor + 'CC',
+          }}
+        >
           <audio
             ref={audioRef}
             controls
             onPlay={startVisualizer}
-            className="
-              w-full h-8
-              opacity-90
-              accent-purple-400
-            "
+            className="w-full h-8 opacity-90"
+            style={{ accentColor: theme.buttonBgColor, background: theme.listColor, color: theme.listColor, borderRadius: 8 }}
           />
         </div>
       </div>
