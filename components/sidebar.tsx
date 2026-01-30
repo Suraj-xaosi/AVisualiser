@@ -31,7 +31,7 @@ export default function Sidebar() {
 
   return (
     <aside
-      className="w-60 h-full p-5 shadow-xl flex flex-col gap-4 flex-1 "
+      className="w-80 h-full p-4 shadow-xl flex flex-col gap-4 flex-1 "
       style={{
         background: theme.sidebarBgColor,
         color: theme.textColor,
@@ -49,15 +49,12 @@ export default function Sidebar() {
             <button
               type="button"
               onClick={() => play(track)}
-              className="w-full text-left px-3 py-2 rounded-lg transition font-medium focus:outline-none focus:ring-2 shadow-sm"
+              className="w-full text-left px-3 py-2 rounded-lg transition font-medium focus:outline-none focus:ring-2 shadow-sm "
               style={{
                 background: theme.listColor,
                 color: theme.listTextColor,
-                border: `2px solid ${theme.buttonBgColor}30`,
-                boxShadow: '0 1px 4px 0 #0001',
-                opacity: 1,
+                
               }}
-              // No need to disable, since all have trackUrl
             >
               {track.trackName || track.trackUrl}
             </button>

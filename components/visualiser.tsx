@@ -108,7 +108,8 @@ export default function Visualiser() {
         return;
       }
     }
-    // If no next track, do nothing (or loop to first...)
+    startVisualizer();  //not doing expected. have to fix autoplay issue
+    
   };
 
 

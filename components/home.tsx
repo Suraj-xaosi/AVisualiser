@@ -77,7 +77,7 @@ export default function Home() {
             {/* Sliding Sidebar */}
             <div
                 className={`
-                    fixed top-0 right-0 h-full w-60 z-30 shadow-2xl
+                    fixed top-0 right-0 h-full w-80 z-30 shadow-2xl
                     transform transition-transform duration-300 ease-in-out
                     ${sidebarOpen ? "translate-x-0" : "translate-x-full"}
                 `}
