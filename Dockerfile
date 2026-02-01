@@ -4,7 +4,7 @@ FROM node:24.13.0-alpine AS builder
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm ci --production
 
 # Copy rest of the source
 COPY . .

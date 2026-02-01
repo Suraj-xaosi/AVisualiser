@@ -10,7 +10,7 @@ import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { setShowAudioInput } from "@/store/slices/showAudioInputSlice";
 import { setShowCustomise } from "@/store/slices/showCustomiseSlice";
 
-export default function Home() {
+export default function Homepage() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const showAudioInput = useAppSelector((state) => state.showAudioInput);
     const showCustomise = useAppSelector((state) => state.showCustomise);
@@ -29,6 +29,11 @@ export default function Home() {
             className="relative min-h-screen overflow-hidden"
             style={{ background: theme.visualizerBgColor }}
         >
+            {/*welcome popup*/}
+            <div>
+                
+            </div>
+
             {/* Visualiser always fullscreen */}
             <main className="w-full h-screen flex items-center justify-center">
                 <Visualiser />

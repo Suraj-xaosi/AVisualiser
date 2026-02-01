@@ -1,16 +1,17 @@
 "use client";
 
-
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { addInList } from "@/store/slices/playlistSlice";
+import { setShowAudioInput } from "@/store/slices/showAudioInputSlice";
+import { setTrack } from "@/store/slices/playerSlice";
 import { useState } from "react";
 
-
-
 export default function AudioInput() {
-  const [tracks, setTracks] = useState<{ trackName: string; trackUrl: string }[]>([]);
   const dispatch = useAppDispatch();
   const theme = useAppSelector((state) => state.theme);
+  
+  // local state 
+  const [tracks, setTracks] = useState<{ trackName: string; trackUrl: string }[]>([]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -25,6 +26,7 @@ export default function AudioInput() {
   const handleSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (tracks.length === 0) return;
+    // Add each track to playlist
     tracks.forEach(track =>
       dispatch(addInList({
         trackName: track.trackName,
@@ -32,8 +34,15 @@ export default function AudioInput() {
         isPlaying: false
       }))
     );
+    // Set first track as current and playing
+    dispatch(setTrack({
+      trackName: tracks[0].trackName,
+      trackUrl: tracks[0].trackUrl,
+      isPlaying: true
+    }));
     alert("Audio files added successfully!");
     setTracks([]);
+    dispatch(setShowAudioInput(false));
   };
 
   return (
@@ -56,7 +65,7 @@ export default function AudioInput() {
           onChange={handleChange}
           className="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:outline-none shadow-sm"
           style={{
-            background: theme.listColor,
+            background: theme.buttonBgColor,
             color: theme.listTextColor,
             borderColor: theme.buttonBgColor,
             borderWidth: 2,

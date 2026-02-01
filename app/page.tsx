@@ -1,100 +1,38 @@
 "use client";
-import Home from "../components/home"
-/*
-import AudioInput from "@/components/audioInput";
-import { useAppSelector } from "@/store/hooks";
-import { useRef } from "react";
+import { useRouter } from "next/navigation";
 
-export default function Landing() {
-  const audiourl=useAppSelector((state) => state.player.currentTrackUrl);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+export default function WelcomePage() {
+  const router = useRouter();
 
-  const audioCtxRef = useRef<AudioContext | null>(null);
-  const analyserRef = useRef<AnalyserNode | null>(null);
-  const dataArrayRef = useRef<Uint8Array | null>(null);
-  const animationRef = useRef<number | null>(null);
- 
-    if (audioRef.current) {
-      audioRef.current.src = audiourl || "";
-    }
-
-  const startVisualizer = async () => {
-    if (!audioRef.current || !canvasRef.current) return;
-
-    if (!audioCtxRef.current) {
-      audioCtxRef.current = new AudioContext();
-
-      const source = audioCtxRef.current.createMediaElementSource(audioRef.current);
-
-      analyserRef.current = audioCtxRef.current.createAnalyser();
-      analyserRef.current.fftSize = 256;
-
-      source.connect(analyserRef.current);
-      analyserRef.current.connect(audioCtxRef.current.destination);
-
-      dataArrayRef.current = new Uint8Array(
-        analyserRef.current.frequencyBinCount
-      );
-    }
-
-    await audioCtxRef.current.resume();
-    audioRef.current.play();
-    draw();
-  };
-
-  const draw = () => {
-    if (
-      !canvasRef.current ||
-      !analyserRef.current ||
-      !dataArrayRef.current
-    )
-      return;
-
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d")!;
-    const WIDTH = canvas.width;
-    const HEIGHT = canvas.height;
-    //@ts-ignore
-    analyserRef.current.getByteFrequencyData(dataArrayRef.current);
-
-    ctx.clearRect(0, 0, WIDTH, HEIGHT);
-
-    const barWidth = WIDTH / dataArrayRef.current.length;
-    let x = 0;
-
-    for (let i = 0; i < dataArrayRef.current.length; i++) {
-      const barHeight = dataArrayRef.current[i];
-
-      ctx.fillStyle = `rgb(${barHeight + 80}, 60, 120)`;
-      ctx.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
-
-      x += barWidth;
-    }
-
-    animationRef.current = requestAnimationFrame(draw);
+  const handleStart = () => {
+    router.push("/home");
   };
 
   return (
-    <div style={{ padding: 20 }}>
-      <AudioInput />
-
-      <br />
-
-      <audio ref={audioRef} controls />
-
-      <br />
-
-      <canvas ref={canvasRef} width={600} height={300} />
-
-      <br />
-
-      <button onClick={startVisualizer}>Start Visualizer</button>
+    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-br from-fuchsia-700 via-indigo-700 to-blue-600">
+      <div className="text-center mb-10">
+        <div className="text-7xl mb-2 animate-bounce">🎧</div>
+        <h1 className="text-4xl sm:text-5xl font-extrabold text-white mb-3 drop-shadow-lg">Welcome to Audio Visualiser</h1>
+        <p className="text-lg sm:text-xl text-pink-200 mb-4 font-medium">
+          See your music come alive.<br />
+          Upload a song and watch the beats dance.
+        </p>
+        <ul className="list-none p-0 my-4 text-blue-100 text-base sm:text-lg space-y-1">
+          <li>• <span className="text-yellow-300">Simple audio upload</span></li>
+          <li>• <span className="text-green-300">Fun, interactive visuals</span></li>
+          <li>• <span className="text-purple-300">Make it yours with easy theme tweaks</span></li>
+        </ul>
+      </div>
+      <button
+        onClick={handleStart}
+        className="px-8 py-4 text-xl font-bold rounded-lg shadow-lg bg-gradient-to-r from-pink-400 via-fuchsia-500 to-indigo-500 text-white hover:scale-105 hover:from-yellow-400 hover:to-pink-500 transition-all duration-200 mb-8 focus:outline-none focus:ring-4 focus:ring-pink-300"
+        aria-label="Start using Audio Visualiser"
+      >
+        Start
+      </button>
+      <div className="text-blue-100 text-sm mt-2">
+        Made for music lovers, by music lover.
+      </div>
     </div>
   );
-}
-*/
-export default function Landing(){
-  
-  return <Home/>
 }
