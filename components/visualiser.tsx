@@ -39,7 +39,18 @@ export default function Visualiser() {
     }
     if (!audiourl && animationRef.current) {
       cancelAnimationFrame(animationRef.current);
+      return;
     }
+  
+    const playNext = async () => {
+      try {
+        await startVisualizer();
+      } catch (err) {
+        console.warn("Autoplay blocked:", err);
+      }
+    };
+
+  playNext();
   }, [audiourl]);
 
 
@@ -108,8 +119,6 @@ export default function Visualiser() {
         return;
       }
     }
-    startVisualizer();  //not doing expected. have to fix autoplay issue
-    
   };
 
 
