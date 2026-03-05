@@ -55,4 +55,11 @@ npm start
 
 ## Have Fun!
 
+
+<img width="1364" height="678" alt="Screenshot 2026-03-03 231923" src="https://github.com/user-attachments/assets/87f72adf-32da-400a-a6e8-4ed64a570de9" />
+
+
+
 Made for people who love music and want to see it in a whole new way. Happy visualizing! 🎵
+
+
