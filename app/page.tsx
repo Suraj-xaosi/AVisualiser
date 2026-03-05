@@ -14,13 +14,12 @@ export default function WelcomePage() {
         <div className="text-7xl mb-2 animate-bounce">🎧</div>
         <h1 className="text-4xl sm:text-5xl font-extrabold text-white mb-3 drop-shadow-lg">Welcome to Audio Visualiser</h1>
         <p className="text-lg sm:text-xl text-pink-200 mb-4 font-medium">
-          See your music come alive.<br />
-          Upload a song and watch the beats dance.
+          See your music come alive.
+          
         </p>
         <ul className="list-none p-0 my-4 text-blue-100 text-base sm:text-lg space-y-1">
-          <li>• <span className="text-yellow-300">Simple audio upload</span></li>
-          <li>• <span className="text-green-300">Fun, interactive visuals</span></li>
-          <li>• <span className="text-purple-300">Make it yours with easy theme tweaks</span></li>
+          <li>• <span className="text-yellow-300">Simple audio drops</span></li>
+          <li>• <span className="text-green-300">satisfying visuals</span></li>
         </ul>
       </div>
       <button

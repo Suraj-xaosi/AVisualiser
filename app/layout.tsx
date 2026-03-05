@@ -28,6 +28,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <script 
+          src="http://localhost:3000/collectorScript.js" 
+          data-site-id="2476bcdd-3031-4bf7-9351-ea66e87bf8ed" 
+          data-site-name="localhost">
+        </script>
         <StoreProvider>
           {children}
         </StoreProvider>

@@ -1,10 +1,11 @@
 
-
 "use client";
 
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { useRef, useEffect, useState } from "react";
+
 export default function Visualiser() {
+
   const audiourl = useAppSelector((state) => state.player.trackUrl);
   const playList = useAppSelector((state) => state.playList);
   const theme = useAppSelector((state) => state.theme);
@@ -39,9 +40,9 @@ export default function Visualiser() {
     }
     if (!audiourl && animationRef.current) {
       cancelAnimationFrame(animationRef.current);
+      //animationRef.current = null;
       return;
     }
-  
     const playNext = async () => {
       try {
         await startVisualizer();
@@ -49,8 +50,7 @@ export default function Visualiser() {
         console.warn("Autoplay blocked:", err);
       }
     };
-
-  playNext();
+    playNext();
   }, [audiourl]);
 
 
@@ -108,7 +108,6 @@ export default function Visualiser() {
     const idx = playList.findIndex(
       (t) => t.trackUrl === audiourl && t.trackUrl !== null
     );
-    // Find next track with valid url
     for (let i = idx + 1; i < playList.length; i++) {
       if (playList[i].trackUrl) {
         dispatch(setTrack({
@@ -144,6 +143,7 @@ export default function Visualiser() {
     animationRef.current = requestAnimationFrame(draw);
   };
 
+
   useEffect(() => {
     // Only redraw if visualizer is running
     if (analyserRef.current && canvasRef.current && dataArrayRef.current && animationRef.current) {
@@ -152,7 +152,7 @@ export default function Visualiser() {
   }, [theme.visualizerBgColor, theme.visualizerBarColor]);
 
 
-  // continueous sizing 
+  //  sizing 
   useEffect(() => {
     const resize = () => {
       if (canvasRef.current) {
