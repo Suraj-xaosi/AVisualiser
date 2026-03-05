@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Sidebar from "./sidebar";
-import Visualiser from "./visualiser";
+import Visualiser2 from "./visualiser2";
 import AudioInput from "./audioInput";
 import ThemeCustomise from "./themeCustomise";
 
@@ -12,6 +12,7 @@ import { setShowCustomise } from "@/store/slices/showCustomiseSlice";
 
 export default function Homepage() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [isFullscreen, setIsFullscreen] = useState(false); // ✅ track fullscreen with state, not document
     const showAudioInput = useAppSelector((state) => state.showAudioInput);
     const showCustomise = useAppSelector((state) => state.showCustomise);
     const theme = useAppSelector((state) => state.theme);
@@ -20,23 +21,42 @@ export default function Homepage() {
     const closeAudioInput = () => {
         dispatch(setShowAudioInput(false));
     };
-    const closeCustomiseTheme=()=>{
+    const closeCustomiseTheme = () => {
         dispatch(setShowCustomise(false));
-    }
+    };
+
+    const toggleFullscreen = () => {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen();
+            setIsFullscreen(true);
+        } else {
+            document.exitFullscreen();
+            setIsFullscreen(false);
+        }
+    };
 
     return (
         <div
             className="relative min-h-screen overflow-hidden"
             style={{ background: theme.visualizerBgColor }}
         >
-            {/*welcome popup*/}
-            <div>
-                
-            </div>
+            {/* ✅ Fullscreen button - now SSR-safe, uses state instead of document at render time */}
+            <button
+                onClick={toggleFullscreen}
+                className="fixed top-4 left-4 z-50 rounded-full p-2 shadow-lg hover:scale-110 transition"
+                style={{
+                    fontSize: 22,
+                    background: theme.visualizerBgColor + 'CC',
+                    color: theme.textColor,
+                    boxShadow: '0 2px 8px 0 #0002',
+                }}
+            >
+                {isFullscreen ? "⛶" : "⛶"}
+            </button>
 
             {/* Visualiser always fullscreen */}
             <main className="w-full h-screen flex items-center justify-center">
-                <Visualiser />
+                <Visualiser2 />
             </main>
 
             {/* AudioInput popup */}
@@ -74,7 +94,7 @@ export default function Homepage() {
                         >
                             ×
                         </button>
-                        <ThemeCustomise/>
+                        <ThemeCustomise />
                     </div>
                 </div>
             )}

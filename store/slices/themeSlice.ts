@@ -15,17 +15,17 @@ export interface ThemeState {
 }
 
 const initialState: ThemeState = {
-  // Vibrant, high-saturation, blue/yellow-based palette (no black)
-  visualizerBgColor: "#0000FF", // very light blue for background
-  visualizerBarColor: "#FFD600", // vibrant yellow for bars
-  sidebarBgColor: "#8B5CF6", // strong blue for sidebar
-  textColor: "#fcfcfd", // deep blue for text
-  buttonBgColor: "#FFD600", // vivid blue for buttons
-  listColor: "#FFD600", // soft yellow for list backgrounds
-  listTextColor: "#fcfcfd", // bold blue for list text
-  popupBgColor: "#8B5CF6", // medium blue for popups
-  popupTextColor: "#fcfcfd", // clean blue for popup text
-  popupButtonColor: "#FFD600", // bright yellow for popup buttons
+
+  visualizerBgColor: "#ff0000", 
+  visualizerBarColor: "#000000", 
+  sidebarBgColor: "#FF0000", 
+  textColor: "#fcfcfd", 
+  buttonBgColor: "#000000", 
+  listColor: "#000000", 
+  listTextColor: "#fcfcfd", 
+  popupBgColor: "#FF0000", 
+  popupTextColor: "#fcfcfd",
+  popupButtonColor: "#000000", 
 };
 
 const themeSlice = createSlice({

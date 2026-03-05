@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
@@ -26,21 +25,18 @@ export default function Visualiser() {
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
 
-  // show/hide controls
   const revealControls = () => {
     setShowControls(true);
     if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current);
     hideTimeoutRef.current = setTimeout(() => setShowControls(false), 3000);
   };
 
-  // Sync audio src
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.src = audiourl || "";
     }
     if (!audiourl && animationRef.current) {
       cancelAnimationFrame(animationRef.current);
-      //animationRef.current = null;
       return;
     }
     const playNext = async () => {
@@ -53,8 +49,6 @@ export default function Visualiser() {
     playNext();
   }, [audiourl]);
 
-
-  // Cleanup
   useEffect(() => {
     return () => {
       if (audioCtxRef.current) audioCtxRef.current.close();
@@ -63,8 +57,6 @@ export default function Visualiser() {
     };
   }, []);
 
-
-  // Spacebar control
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.code === "Space") {
@@ -82,16 +74,13 @@ export default function Visualiser() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
-
-
-  // Visualizer logic
   const startVisualizer = async () => {
     if (!audioRef.current || !canvasRef.current) return;
     if (!audioCtxRef.current) {
       audioCtxRef.current = new AudioContext();
       const source = audioCtxRef.current.createMediaElementSource(audioRef.current);
       analyserRef.current = audioCtxRef.current.createAnalyser();
-      analyserRef.current.fftSize = 256;
+      analyserRef.current.fftSize = 128;
       source.connect(analyserRef.current);
       analyserRef.current.connect(audioCtxRef.current.destination);
       dataArrayRef.current = new Uint8Array(analyserRef.current.frequencyBinCount);
@@ -101,10 +90,7 @@ export default function Visualiser() {
     draw();
   };
 
-
-  // Play next track when current ends
   const handleAudioEnded = () => {
-    // Find current track index in playlist
     const idx = playList.findIndex(
       (t) => t.trackUrl === audiourl && t.trackUrl !== null
     );
@@ -120,8 +106,6 @@ export default function Visualiser() {
     }
   };
 
-
-  // Drawing engine
   const draw = () => {
     if (!canvasRef.current || !analyserRef.current || !dataArrayRef.current) return;
     const canvas = canvasRef.current;
@@ -131,36 +115,64 @@ export default function Visualiser() {
     //@ts-ignore
     analyserRef.current.getByteFrequencyData(dataArrayRef.current);
 
+    ctx.clearRect(0, 0, WIDTH, HEIGHT);
     ctx.fillStyle = theme.visualizerBgColor;
     ctx.fillRect(0, 0, WIDTH, HEIGHT);
-    const barWidth = WIDTH / dataArrayRef.current.length;
-    
-    let x = 0;
-    for (let i = 0; i < dataArrayRef.current.length; i++) {
+
+    const totalBars = dataArrayRef.current.length;
+    const gap = 2;
+    const barWidth = (WIDTH - gap * (totalBars - 1)) / totalBars;
+    const radius = Math.max(3, barWidth * 1);
+
+    for (let i = 0; i < totalBars; i++) {
       const barHeight = dataArrayRef.current[i] * 2.3;
-      ctx.fillStyle = theme.visualizerBarColor;
-      ctx.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
-      x += barWidth;
+      const x = i * (barWidth + gap);
+      const y = HEIGHT - barHeight;
+      const w = barWidth;
+      const h = barHeight;
+
+      if (h < 1) continue;
+
+      // Parse bar color for shading
+      const baseColor = theme.visualizerBarColor;
+
+      // Rounded rect path (top corners only)
+      const r = Math.min(radius, w / 2, h / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h);
+      ctx.lineTo(x, y + h);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+
+      // Main fill
+      ctx.fillStyle = baseColor;
+      ctx.fill();
+
+       //Left face shadow — gives 3D depth illusion
+      const shadowGrad = ctx.createLinearGradient(x, 0, x + w * 0.4, 0);
+      shadowGrad.addColorStop(0, "rgba(0,0,0,0.1)");
+      shadowGrad.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = shadowGrad;
+      ctx.fill();
     }
+
     animationRef.current = requestAnimationFrame(draw);
   };
 
-
   useEffect(() => {
-    // Only redraw if visualizer is running
     if (analyserRef.current && canvasRef.current && dataArrayRef.current && animationRef.current) {
       draw();
     }
   }, [theme.visualizerBgColor, theme.visualizerBarColor]);
 
-
-  //  sizing 
   useEffect(() => {
     const resize = () => {
       if (canvasRef.current) {
-        //@ts-ignore
         canvasRef.current.width = window.innerWidth;
-        //@ts-ignore
         canvasRef.current.height = window.innerHeight;
       }
     };
@@ -169,21 +181,18 @@ export default function Visualiser() {
     return () => window.removeEventListener("resize", resize);
   }, []);
 
-
   return (
     <div
       className="fixed inset-0 z-10"
       style={{ width: "100vw", height: "100vh", background: theme.visualizerBgColor, overflow: "hidden" }}
       onMouseMove={revealControls}
     >
-      {/* Visualizer */}
       <canvas
         ref={canvasRef}
         className="w-full h-full block"
         style={{ display: "block", width: "100vw", height: "100vh" }}
       />
 
-      {/* Floating audio controls */}
       <div
         className={`
           fixed bottom-4 left-1/2 -translate-x-1/2
@@ -198,7 +207,7 @@ export default function Visualiser() {
         style={{ zIndex: 50 }}
       >
         <div
-          className="backdrop-blur-md rounded-2xl px-4 py-2 shadow-2xl "
+          className="backdrop-blur-md rounded-2xl px-4 py-2 shadow-2xl"
           style={{
             background: theme.sidebarBgColor + 'CC',
           }}
