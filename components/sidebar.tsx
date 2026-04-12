@@ -39,7 +39,7 @@ export default function Sidebar() {
       }}
     >
       <h3 className="text-2xl font-bold mb-2" style={{ color: theme.textColor }}>Audio List</h3>
-      <ul className="overflow-y-auto space-y-2">
+      <ul className="overflow-y-auto scrollbar-hide space-y-2">
         {playList.length === 0 && (
           <li className="text-sm opacity-80" style={{ color: theme.listTextColor, background: theme.listColor, borderRadius: 8, padding: 8 }}>No audio tracks added yet.</li>
         )}
@@ -87,6 +87,18 @@ export default function Sidebar() {
       >
         Customize Theme
       </button>
+
+      <style jsx>{`
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        `}
+      </style>
+
     </aside>
   );
 }

@@ -104,21 +104,30 @@ export default function Visualiser() {
 
   // Play next track when current ends
   const handleAudioEnded = () => {
-    // Find current track index in playlist
-    const idx = playList.findIndex(
-      (t) => t.trackUrl === audiourl && t.trackUrl !== null
-    );
-    for (let i = idx + 1; i < playList.length; i++) {
-      if (playList[i].trackUrl) {
-        dispatch(setTrack({
+  if (!playList.length) return;
+
+  // Find current track index
+  const idx = playList.findIndex(
+    (t) => t.trackUrl === audiourl && t.trackUrl !== null
+  );
+  console.log("track index found " + idx);
+  // Try to find next track
+  for (let i = idx + 1; i < playList.length; i++) {
+    if (playList[i].trackUrl) {
+      dispatch(
+        setTrack({
           trackName: playList[i].trackName,
           trackUrl: playList[i].trackUrl,
           isPlaying: true,
-        }));
-        return;
-      }
+        })
+      );
+      console.log("playing next track " + playList[i].trackName);
+      return;
     }
-  };
+  }
+
+
+};
 
 
   // Drawing engine

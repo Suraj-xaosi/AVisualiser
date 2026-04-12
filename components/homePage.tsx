@@ -12,7 +12,7 @@ import { setShowCustomise } from "@/store/slices/showCustomiseSlice";
 
 export default function Homepage() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [isFullscreen, setIsFullscreen] = useState(false); // ✅ track fullscreen with state, not document
+    //const [isFullscreen, setIsFullscreen] = useState(false); 
     const showAudioInput = useAppSelector((state) => state.showAudioInput);
     const showCustomise = useAppSelector((state) => state.showCustomise);
     const theme = useAppSelector((state) => state.theme);
@@ -28,10 +28,10 @@ export default function Homepage() {
     const toggleFullscreen = () => {
         if (!document.fullscreenElement) {
             document.documentElement.requestFullscreen();
-            setIsFullscreen(true);
+            //setIsFullscreen(true);
         } else {
             document.exitFullscreen();
-            setIsFullscreen(false);
+            //setIsFullscreen(false);
         }
     };
 
@@ -40,7 +40,7 @@ export default function Homepage() {
             className="relative min-h-screen overflow-hidden"
             style={{ background: theme.visualizerBgColor }}
         >
-            {/* ✅ Fullscreen button - now SSR-safe, uses state instead of document at render time */}
+
             <button
                 onClick={toggleFullscreen}
                 className="fixed top-4 left-4 z-50 rounded-full p-2 shadow-lg hover:scale-110 transition"
@@ -48,10 +48,10 @@ export default function Homepage() {
                     fontSize: 22,
                     background: theme.visualizerBgColor + 'CC',
                     color: theme.textColor,
-                    boxShadow: '0 2px 8px 0 #0002',
+                    
                 }}
             >
-                {isFullscreen ? "⛶" : "⛶"}
+                ⛶
             </button>
 
             {/* Visualiser always fullscreen */}
