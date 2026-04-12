@@ -11,26 +11,24 @@ A fun and colorful web app that lets you see your music in action! Upload or pla
 
 ## Getting Started
 
-### What You Need
+### Requirements
 
-- Node.js installed on your computer
-- npm (comes with Node.js)
+- Node.js installed
+- npm
 
-### How to Run It
+### Install dependencies
 
-1. Open your terminal and go to the project folder
-2. Install the dependencies (only needed the first time):
-   ```bash
-   npm install
-   ```
+```bash
+npm install
+```
 
-3. Start the app:
-   ```bash
-   npm run dev
-   ```
+### Run locally in development
 
-4. Open your browser and go to: `http://localhost:3000`
-5. Click "Start" and enjoy!
+```bash
+npm run dev
+```
+
+> Note: this app may not behave consistently in dev mode. For the best local experience, use the production standalone build below.
 
 ## Built With
 
@@ -45,9 +43,17 @@ A fun and colorful web app that lets you see your music in action! Upload or pla
 - `components/` - The different parts that make up the interface (visualizer, audio player, theme settings, etc.)
 - `public/` - Images and other files
 
-## Want to Build It?
+## Build and run locally (recommended)
 
-Run this command to prepare it for the real world:
+This app works best when built and run in production mode.
+
+```bash
+npm run build
+npm run start:standalone
+```
+
+If you want to run the normal Next.js production server instead, use:
+
 ```bash
 npm run build
 npm start
