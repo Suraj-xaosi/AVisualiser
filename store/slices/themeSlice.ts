@@ -1,5 +1,5 @@
+// store/slices/themeSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { text } from "stream/consumers";
 
 export interface ThemeState {
   visualizerBgColor: string;
@@ -9,28 +9,28 @@ export interface ThemeState {
   buttonBgColor: string;
   listColor: string;
   listTextColor: string;
-  popupBgColor?: string;
-  popupTextColor?: string;
-  popupButtonColor?: string;
+  popupBgColor: string;
+  popupTextColor: string;
+  popupButtonColor: string;
 }
 
-const initialState: ThemeState = {
-
-  visualizerBgColor: "#ff0000", 
-  visualizerBarColor: "#000000", 
-  sidebarBgColor: "#FF0000", 
-  textColor: "#fcfcfd", 
-  buttonBgColor: "#000000", 
-  listColor: "#000000", 
-  listTextColor: "#fcfcfd", 
-  popupBgColor: "#FF0000", 
-  popupTextColor: "#fcfcfd",
-  popupButtonColor: "#000000", 
+// Replaces the old #ff0000 dev-scaffolding defaults with a real theme.
+export const defaultTheme: ThemeState = {
+  visualizerBgColor: "#121E3A",
+  visualizerBarColor: "#8B5CF6",
+  sidebarBgColor: "#172543",
+  textColor: "#EDF2FF",
+  buttonBgColor: "#7C5CF6",
+  listColor: "#1C2B45",
+  listTextColor: "#EDF2FF",
+  popupBgColor: "#1B2B44",
+  popupTextColor: "#EDF2FF",
+  popupButtonColor: "#8B5CF6",
 };
 
 const themeSlice = createSlice({
   name: "theme",
-  initialState,
+  initialState: defaultTheme,
   reducers: {
     setTheme: (state, action: PayloadAction<Partial<ThemeState>>) => {
       return { ...state, ...action.payload };
@@ -41,7 +41,7 @@ const themeSlice = createSlice({
     ) => {
       state[action.payload.key] = action.payload.value;
     },
-    resetTheme: () => initialState,
+    resetTheme: () => defaultTheme,
   },
 });
 

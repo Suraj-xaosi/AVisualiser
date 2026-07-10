@@ -1,76 +1,81 @@
+// components/sidebar.tsx
 "use client";
 
-import { PlayList } from "../store/slices/playlistSlice";
+import Link from "next/link";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { setShowAudioInput } from "@/store/slices/showAudioInputSlice";
-import { setTrack, PlayerState } from "../store/slices/playerSlice";
+import { setTrack } from "@/store/slices/playerSlice";
 import { setShowCustomise } from "@/store/slices/showCustomiseSlice";
-
-
+import type { Track } from "@/lib/types";
 
 export default function Sidebar() {
-  const playList: PlayList = useAppSelector((p) => p.playList);
+  const playList = useAppSelector((p) => p.playList);
   const theme = useAppSelector((state) => state.theme);
   const dispatch = useAppDispatch();
 
-  const play = (track: PlayerState) => {
+  const play = (track: Track) => {
     if (!track.trackUrl) return;
-    dispatch(setTrack({
-      trackName: track.trackName,
-      trackUrl: track.trackUrl,
-      isPlaying: true,
-    }));
+    dispatch(setTrack(track));
   };
 
-  const openAudioInput = () => {
-    dispatch(setShowAudioInput(true));
-  };
-  const openCustomizeTheme = () => {
-    dispatch(setShowCustomise(true));
-  };
+  const openAudioInput = () => dispatch(setShowAudioInput(true));
+  const openCustomizeTheme = () => dispatch(setShowCustomise(true));
 
   return (
     <aside
-      className="w-80 h-full p-4 shadow-xl flex flex-col gap-4 flex-1 "
-      style={{
-        background: theme.sidebarBgColor,
-        color: theme.textColor,
-        
-      }}
+      className="w-full sm:w-80 h-full p-4 shadow-xl flex flex-col gap-4"
+      style={{ background: theme.sidebarBgColor, color: theme.textColor }}
     >
-      <h3 className="text-2xl font-bold mb-2" style={{ color: theme.textColor }}>Audio List</h3>
-      <ul className="overflow-y-auto scrollbar-hide space-y-2">
+      <h3 className="text-2xl font-bold mb-2">Audio List</h3>
+      <ul className="overflow-y-auto scrollbar-hide space-y-2 flex-1">
         {playList.length === 0 && (
-          <li className="text-sm opacity-80" style={{ color: theme.listTextColor, background: theme.listColor, borderRadius: 8, padding: 8 }}>No audio tracks added yet.</li>
+          <li
+            className="text-sm opacity-80"
+            style={{ color: theme.listTextColor, background: theme.listColor, borderRadius: 8, padding: 8 }}
+          >
+            No audio tracks added yet.
+          </li>
         )}
-        
-        {playList.filter(track => track.trackUrl).map((track, idx) => (
-          <li key={idx}>
+
+        {playList.map((track) => (
+          <li key={track.id}>
             <button
               type="button"
               onClick={() => play(track)}
-              className="w-full text-left px-3 py-2 rounded-lg transition font-medium focus:outline-none focus:ring-2 shadow-sm "
-              style={{
-                background: theme.listColor,
-                color: theme.listTextColor,
-                
-              }}
+              className="w-full text-left px-3 py-2 rounded-lg transition font-medium focus:outline-none focus-visible:ring-2 shadow-sm"
+              style={{ background: theme.listColor, color: theme.listTextColor }}
             >
-              {track.trackName || track.trackUrl}
+              {track.trackName}
+              {track.source === "online" && (
+                <span className="ml-2 text-[10px] uppercase tracking-wide opacity-60">online</span>
+              )}
             </button>
           </li>
         ))}
       </ul>
 
+      <div className="flex flex-col gap-2">
+        <Link
+          href="/library"
+          className="text-center p-2 rounded-lg font-semibold text-sm hover:scale-105 transition focus:outline-none focus-visible:ring-2"
+          style={{ background: theme.listColor, color: theme.listTextColor }}
+        >
+          Browse library
+        </Link>
+        <Link
+          href="/local"
+          className="text-center p-2 rounded-lg font-semibold text-sm hover:scale-105 transition focus:outline-none focus-visible:ring-2"
+          style={{ background: theme.listColor, color: theme.listTextColor }}
+        >
+          Manage local tracks
+        </Link>
+      </div>
+
       <button
         type="button"
         onClick={openAudioInput}
-        className="p-3 shadow-md rounded-lg mb-3 cursor-pointer transition-all font-semibold hover:scale-105"
-        style={{
-          background: theme.buttonBgColor,
-          color: theme.textColor,
-          border: 'none',
-        }}
+        className="p-3 shadow-md rounded-lg cursor-pointer transition-all font-semibold hover:scale-105 focus:outline-none focus-visible:ring-2"
+        style={{ background: theme.buttonBgColor, color: theme.textColor, border: "none" }}
       >
         Add another audio
       </button>
@@ -78,12 +83,8 @@ export default function Sidebar() {
       <button
         type="button"
         onClick={openCustomizeTheme}
-        className="p-3 shadow-md rounded-lg cursor-pointer transition-all font-semibold hover:scale-105"
-        style={{
-          background: theme.buttonBgColor,
-          color: theme.textColor,
-          border: 'none',
-        }}
+        className="p-3 shadow-md rounded-lg cursor-pointer transition-all font-semibold hover:scale-105 focus:outline-none focus-visible:ring-2"
+        style={{ background: theme.buttonBgColor, color: theme.textColor, border: "none" }}
       >
         Customize Theme
       </button>
@@ -96,10 +97,7 @@ export default function Sidebar() {
           -ms-overflow-style: none;
           scrollbar-width: none;
         }
-        `}
-      </style>
-
+      `}</style>
     </aside>
   );
 }
-

@@ -1,17 +1,16 @@
+// components/visualiser2.tsx
 "use client";
 
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
+import { setTrack } from "@/store/slices/playerSlice";
 import { useRef, useEffect, useState } from "react";
 
-export default function Visualiser() {
-
-  const audiourl = useAppSelector((state) => state.player.trackUrl);
+export default function Visualiser2() {
+  const player = useAppSelector((state) => state.player);
+  const audiourl = player.trackUrl;
   const playList = useAppSelector((state) => state.playList);
   const theme = useAppSelector((state) => state.theme);
-
   const dispatch = useAppDispatch();
-
-  const { setTrack } = require("@/store/slices/playerSlice");
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -23,7 +22,6 @@ export default function Visualiser() {
 
   const [showControls, setShowControls] = useState(false);
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
 
   const revealControls = () => {
     setShowControls(true);
@@ -47,6 +45,7 @@ export default function Visualiser() {
       }
     };
     playNext();
+    
   }, [audiourl]);
 
   useEffect(() => {
@@ -80,6 +79,8 @@ export default function Visualiser() {
       audioCtxRef.current = new AudioContext();
       const source = audioCtxRef.current.createMediaElementSource(audioRef.current);
       analyserRef.current = audioCtxRef.current.createAnalyser();
+      // Bumped from 128 to 512 — more frequency bins gives a noticeably
+      
       analyserRef.current.fftSize = 128;
       source.connect(analyserRef.current);
       analyserRef.current.connect(audioCtxRef.current.destination);
@@ -91,16 +92,11 @@ export default function Visualiser() {
   };
 
   const handleAudioEnded = () => {
-    const idx = playList.findIndex(
-      (t) => t.trackUrl === audiourl && t.trackUrl !== null
-    );
+    
+    const idx = playList.findIndex((t) => t.id === player.id);
     for (let i = idx + 1; i < playList.length; i++) {
       if (playList[i].trackUrl) {
-        dispatch(setTrack({
-          trackName: playList[i].trackName,
-          trackUrl: playList[i].trackUrl,
-          isPlaying: true,
-        }));
+        dispatch(setTrack(playList[i]));
         return;
       }
     }
@@ -112,7 +108,7 @@ export default function Visualiser() {
     const ctx = canvas.getContext("2d")!;
     const WIDTH = canvas.width;
     const HEIGHT = canvas.height;
-    //@ts-ignore
+    // @ts-ignore — AnalyserNode typings vary across TS lib versions
     analyserRef.current.getByteFrequencyData(dataArrayRef.current);
 
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
@@ -133,10 +129,7 @@ export default function Visualiser() {
 
       if (h < 1) continue;
 
-      // Parse bar color for shading
       const baseColor = theme.visualizerBarColor;
-
-      // Rounded rect path (top corners only)
       const r = Math.min(radius, w / 2, h / 2);
       ctx.beginPath();
       ctx.moveTo(x + r, y);
@@ -148,11 +141,9 @@ export default function Visualiser() {
       ctx.quadraticCurveTo(x, y, x + r, y);
       ctx.closePath();
 
-      // Main fill
       ctx.fillStyle = baseColor;
       ctx.fill();
 
-       //Left face shadow — gives 3D depth illusion
       const shadowGrad = ctx.createLinearGradient(x, 0, x + w * 0.4, 0);
       shadowGrad.addColorStop(0, "rgba(0,0,0,0.1)");
       shadowGrad.addColorStop(1, "rgba(0,0,0,0)");
@@ -167,6 +158,7 @@ export default function Visualiser() {
     if (analyserRef.current && canvasRef.current && dataArrayRef.current && animationRef.current) {
       draw();
     }
+    
   }, [theme.visualizerBgColor, theme.visualizerBarColor]);
 
   useEffect(() => {
@@ -186,6 +178,7 @@ export default function Visualiser() {
       className="fixed inset-0 z-10"
       style={{ width: "100vw", height: "100vh", background: theme.visualizerBgColor, overflow: "hidden" }}
       onMouseMove={revealControls}
+      onTouchStart={revealControls}
     >
       <canvas
         ref={canvasRef}
@@ -194,23 +187,14 @@ export default function Visualiser() {
       />
 
       <div
-        className={`
-          fixed bottom-4 left-1/2 -translate-x-1/2
-          w-[95vw]
-          transition-all duration-500 ease-out
-          ${
-            showControls
-              ? "opacity-100 translate-y-0"
-              : "opacity-0 translate-y-4 pointer-events-none"
-          }
-        `}
+        className={`fixed bottom-4 left-1/2 -translate-x-1/2 w-[95vw] transition-all duration-500 ease-out ${
+          showControls ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
+        }`}
         style={{ zIndex: 50 }}
       >
         <div
           className="backdrop-blur-md rounded-2xl px-4 py-2 shadow-2xl"
-          style={{
-            background: theme.sidebarBgColor + 'CC',
-          }}
+          style={{ background: theme.sidebarBgColor + "CC" }}
         >
           <audio
             ref={audioRef}
@@ -218,7 +202,12 @@ export default function Visualiser() {
             onPlay={startVisualizer}
             onEnded={handleAudioEnded}
             className="w-full h-8 opacity-90"
-            style={{ accentColor: theme.buttonBgColor, background: theme.listColor, color: theme.listColor, borderRadius: 8 }}
+            style={{
+              accentColor: theme.buttonBgColor,
+              background: theme.listColor,
+              color: theme.listColor,
+              borderRadius: 8,
+            }}
           />
         </div>
       </div>

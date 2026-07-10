@@ -1,46 +1,61 @@
+// components/audioInput.tsx
 "use client";
 
+import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { addInList } from "@/store/slices/playlistSlice";
 import { setShowAudioInput } from "@/store/slices/showAudioInputSlice";
 import { setTrack } from "@/store/slices/playerSlice";
-import { useState } from "react";
+import { saveLocalTrack } from "@/lib/db";
+import type { Track } from "@/lib/types";
+
+type PendingTrack = { id: string; trackName: string; file: File; trackUrl: string };
 
 export default function AudioInput() {
   const dispatch = useAppDispatch();
   const theme = useAppSelector((state) => state.theme);
-  
-  // local state 
-  const [tracks, setTracks] = useState<{ trackName: string; trackUrl: string }[]>([]);
+
+  const [tracks, setTracks] = useState<PendingTrack[]>([]);
+  const [saving, setSaving] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
-    const newTracks = Array.from(files).map(file => ({
+    const newTracks = Array.from(files).map((file) => ({
+      id: crypto.randomUUID(),
       trackName: file.name,
-      trackUrl: URL.createObjectURL(file)
+      file,
+      trackUrl: URL.createObjectURL(file),
     }));
     setTracks(newTracks);
   };
 
-  const handleSubmit = (e?: React.FormEvent) => {
+  const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (tracks.length === 0) return;
-    // Add each track to playlist
-    tracks.forEach(track =>
-      dispatch(addInList({
+    setSaving(true);
+
+    for (const track of tracks) {
+      
+      await saveLocalTrack({ id: track.id, trackName: track.trackName, blob: track.file });
+      const asTrack: Track = {
+        id: track.id,
         trackName: track.trackName,
         trackUrl: track.trackUrl,
-        isPlaying: false
-      }))
-    );
-    // Set first track as current and playing
-    dispatch(setTrack({
+        source: "local",
+      };
+      dispatch(addInList(asTrack));
+    }
+
+    const first: Track = {
+      id: tracks[0].id,
       trackName: tracks[0].trackName,
       trackUrl: tracks[0].trackUrl,
-      isPlaying: true
-    }));
-    alert("Audio files added successfully!");
+      source: "local",
+    };
+    dispatch(setTrack(first));
+
+    setSaving(false);
     setTracks([]);
     dispatch(setShowAudioInput(false));
   };
@@ -49,9 +64,11 @@ export default function AudioInput() {
     <form
       onSubmit={handleSubmit}
       className="rounded-2xl shadow-2xl p-8 flex flex-col gap-5 w-full max-w-sm mx-auto border border-purple-200"
-      style={{ background: theme.sidebarBgColor + 'F2', color: theme.textColor }}
+      style={{ background: theme.sidebarBgColor + "F2", color: theme.textColor }}
     >
-      <h3 className="text-2xl font-bold mb-4" style={{ color: theme.buttonBgColor }}>Add Audio</h3>
+      <h3 className="text-2xl font-bold mb-4" style={{ color: theme.buttonBgColor }}>
+        Add Audio
+      </h3>
 
       <div>
         <label className="block text-sm font-medium mb-2" style={{ color: theme.textColor }}>
@@ -59,7 +76,6 @@ export default function AudioInput() {
         </label>
         <input
           type="file"
-          placeholder="choose"
           accept="audio/*"
           multiple
           onChange={handleChange}
@@ -72,11 +88,12 @@ export default function AudioInput() {
           }}
         />
       </div>
+
       {tracks.length > 0 && (
         <ul className="mb-2 space-y-2">
-          {tracks.map((track, idx) => (
+          {tracks.map((track) => (
             <li
-              key={idx}
+              key={track.id}
               className="w-full px-3 py-2 rounded-lg border shadow-sm"
               style={{
                 background: theme.listColor,
@@ -90,19 +107,15 @@ export default function AudioInput() {
           ))}
         </ul>
       )}
+
       <button
         type="submit"
-        className="w-full rounded-lg font-semibold shadow-md transition disabled:opacity-50 hover:scale-105"
-        style={{
-          background: theme.buttonBgColor,
-          color: theme.textColor,
-        }}
-        disabled={tracks.length === 0}
+        className="w-full rounded-lg font-semibold shadow-md transition disabled:opacity-50 hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+        style={{ background: theme.buttonBgColor, color: theme.textColor }}
+        disabled={tracks.length === 0 || saving}
       >
-        Submit
+        {saving ? "Saving…" : "Submit"}
       </button>
     </form>
   );
 }
-
-     

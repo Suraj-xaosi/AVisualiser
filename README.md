@@ -37,15 +37,10 @@ npm run dev
 - **Tailwind CSS** - Makes everything look pretty
 - **Redux** - Keeps track of settings and what's playing
 
-## What's Inside?
-
-- `app/` - The main pages of the app
-- `components/` - The different parts that make up the interface (visualizer, audio player, theme settings, etc.)
-- `public/` - Images and other files
 
 ## Build and run locally (recommended)
 
-This app works best when built and run in production mode.
+This app works best when built and run .
 
 ```bash
 npm run build
