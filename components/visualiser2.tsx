@@ -79,9 +79,8 @@ export default function Visualiser2() {
       audioCtxRef.current = new AudioContext();
       const source = audioCtxRef.current.createMediaElementSource(audioRef.current);
       analyserRef.current = audioCtxRef.current.createAnalyser();
-      // Bumped from 128 to 512 — more frequency bins gives a noticeably
       
-      analyserRef.current.fftSize = 128;
+      analyserRef.current.fftSize = 256;
       source.connect(analyserRef.current);
       analyserRef.current.connect(audioCtxRef.current.destination);
       dataArrayRef.current = new Uint8Array(analyserRef.current.frequencyBinCount);
@@ -92,7 +91,6 @@ export default function Visualiser2() {
   };
 
   const handleAudioEnded = () => {
-    
     const idx = playList.findIndex((t) => t.id === player.id);
     for (let i = idx + 1; i < playList.length; i++) {
       if (playList[i].trackUrl) {
@@ -199,6 +197,7 @@ export default function Visualiser2() {
           <audio
             ref={audioRef}
             controls
+            crossOrigin="anonymous"
             onPlay={startVisualizer}
             onEnded={handleAudioEnded}
             className="w-full h-8 opacity-90"
@@ -214,3 +213,7 @@ export default function Visualiser2() {
     </div>
   );
 }
+
+
+
+
