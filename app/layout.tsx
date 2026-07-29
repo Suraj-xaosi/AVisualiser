@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono, Cinzel } from "next/font/google";
 import "./globals.css";
 import StoreProvider from "@/store/StoreProvider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const cinzel = Cinzel({
+  variable: "--font-deco",
   subsets: ["latin"],
+  weight: ["400"],
 });
 
 const geistMono = Geist_Mono({
@@ -26,17 +27,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${cinzel.className} ${geistMono.variable} antialiased`}
       >
-        <script 
-          src="http://localhost:3000/collectorScript.js" 
-          data-site-id="2476bcdd-3031-4bf7-9351-ea66e87bf8ed" 
+        <script
+          src="http://localhost:3000/collectorScript.js"
+          data-site-id="2476bcdd-3031-4bf7-9351-ea66e87bf8ed"
           data-site-name="localhost">
         </script>
         <StoreProvider>
           {children}
         </StoreProvider>
-
       </body>
     </html>
   );

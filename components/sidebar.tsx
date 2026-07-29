@@ -1,12 +1,13 @@
 // components/sidebar.tsx
 "use client";
 
-import Link from "next/link";
 import { useAppSelector, useAppDispatch } from "@/store/hooks";
 import { setShowAudioInput } from "@/store/slices/showAudioInputSlice";
 import { setTrack } from "@/store/slices/playerSlice";
 import { setShowCustomise } from "@/store/slices/showCustomiseSlice";
 import type { Track } from "@/lib/types";
+import { setShowOnlineMusic } from "@/store/slices/showOnlineMusicSlice";
+import { setShowOfflineMusic } from "@/store/slices/showOfflineMusicSlice";
 
 export default function Sidebar() {
   const playList = useAppSelector((p) => p.playList);
@@ -17,7 +18,8 @@ export default function Sidebar() {
     if (!track.trackUrl) return;
     dispatch(setTrack(track));
   };
-
+  const openOnlineMusic = () => dispatch(setShowOnlineMusic(true));
+  const openOfflineMusic = () => dispatch(setShowOfflineMusic(true));
   const openAudioInput = () => dispatch(setShowAudioInput(true));
   const openCustomizeTheme = () => dispatch(setShowCustomise(true));
 
@@ -55,20 +57,22 @@ export default function Sidebar() {
       </ul>
 
       <div className="flex flex-col gap-2">
-        <Link
-          href="/library"
-          className="text-center p-2 rounded-lg font-semibold text-sm hover:scale-105 transition focus:outline-none focus-visible:ring-2"
-          style={{ background: theme.listColor, color: theme.listTextColor }}
+        <button
+          type="button"
+          onClick={openOnlineMusic}
+          className="p-3 shadow-md rounded-lg cursor-pointer transition-all font-semibold hover:scale-105 focus:outline-none focus-visible:ring-2"
+          style={{ background: theme.buttonBgColor, color: theme.textColor, border: "none" }}
         >
-          Browse library
-        </Link>
-        <Link
-          href="/local"
-          className="text-center p-2 rounded-lg font-semibold text-sm hover:scale-105 transition focus:outline-none focus-visible:ring-2"
-          style={{ background: theme.listColor, color: theme.listTextColor }}
+          Online music
+        </button>
+        <button
+          type="button"
+          onClick={openOfflineMusic}
+          className="p-3 shadow-md rounded-lg cursor-pointer transition-all font-semibold hover:scale-105 focus:outline-none focus-visible:ring-2"
+          style={{ background: theme.buttonBgColor, color: theme.textColor, border: "none" }}
         >
-          Manage local tracks
-        </Link>
+          local music
+        </button>
       </div>
 
       <button

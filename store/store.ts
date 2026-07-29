@@ -5,6 +5,9 @@ import playListReducer from "./slices/playlistSlice";
 import showAudioInputReducer from "./slices/showAudioInputSlice";
 import themeReducer from "./slices/themeSlice";
 import showCustomiseReducer from "./slices/showCustomiseSlice";
+import showOnlineMusicReducer  from "./slices/showOnlineMusicSlice";
+import showOfflineMusicReducer  from "./slices/showOfflineMusicSlice";
+import barCountReducer from "./slices/barCounSlice";
 
 export const createStore = () => {
   return configureStore({
@@ -14,6 +17,9 @@ export const createStore = () => {
       showAudioInput: showAudioInputReducer,
       theme: themeReducer,
       showCustomise: showCustomiseReducer,
+      showOnlineMusic:showOnlineMusicReducer,
+      showOfflineMusic:showOfflineMusicReducer,
+      barCount:barCountReducer
     },
   });
 };

@@ -6,11 +6,15 @@ import { setTrack } from "@/store/slices/playerSlice";
 import { useRef, useEffect, useState } from "react";
 
 export default function Visualiser2() {
+  const dispatch = useAppDispatch();
   const player = useAppSelector((state) => state.player);
   const audiourl = player.trackUrl;
   const playList = useAppSelector((state) => state.playList);
   const theme = useAppSelector((state) => state.theme);
-  const dispatch = useAppDispatch();
+  const barcount=useAppSelector((State)=>State.barCount);
+  
+
+  
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -79,8 +83,12 @@ export default function Visualiser2() {
       audioCtxRef.current = new AudioContext();
       const source = audioCtxRef.current.createMediaElementSource(audioRef.current);
       analyserRef.current = audioCtxRef.current.createAnalyser();
-      
-      analyserRef.current.fftSize = 256;
+
+      if(barcount=="high"){
+        analyserRef.current.fftSize = 256;
+      }else{
+        analyserRef.current.fftSize = 128;
+      }
       source.connect(analyserRef.current);
       analyserRef.current.connect(audioCtxRef.current.destination);
       dataArrayRef.current = new Uint8Array(analyserRef.current.frequencyBinCount);
@@ -118,6 +126,9 @@ export default function Visualiser2() {
     const barWidth = (WIDTH - gap * (totalBars - 1)) / totalBars;
     const radius = Math.max(3, barWidth * 1);
 
+    // Single fillStyle for the whole frame — no per-bar allocation.
+    ctx.fillStyle = theme.visualizerBarColor;
+
     for (let i = 0; i < totalBars; i++) {
       const barHeight = dataArrayRef.current[i] * 2.3;
       const x = i * (barWidth + gap);
@@ -127,7 +138,6 @@ export default function Visualiser2() {
 
       if (h < 1) continue;
 
-      const baseColor = theme.visualizerBarColor;
       const r = Math.min(radius, w / 2, h / 2);
       ctx.beginPath();
       ctx.moveTo(x + r, y);
@@ -138,14 +148,6 @@ export default function Visualiser2() {
       ctx.lineTo(x, y + r);
       ctx.quadraticCurveTo(x, y, x + r, y);
       ctx.closePath();
-
-      ctx.fillStyle = baseColor;
-      ctx.fill();
-
-      const shadowGrad = ctx.createLinearGradient(x, 0, x + w * 0.4, 0);
-      shadowGrad.addColorStop(0, "rgba(0,0,0,0.1)");
-      shadowGrad.addColorStop(1, "rgba(0,0,0,0)");
-      ctx.fillStyle = shadowGrad;
       ctx.fill();
     }
 
@@ -213,7 +215,3 @@ export default function Visualiser2() {
     </div>
   );
 }
-
-
-
-

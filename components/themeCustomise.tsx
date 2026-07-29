@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setTheme, resetTheme, ThemeState } from "@/store/slices/themeSlice";
 import { setShowCustomise } from "@/store/slices/showCustomiseSlice";
 import { themePresets } from "@/store/themes";
+import { setBarCount } from "@/store/slices/barCounSlice";
 
 const FIELDS: [keyof ThemeState, string][] = [
   ["visualizerBgColor", "Visualiser Background"],
@@ -90,6 +91,23 @@ export default function ThemeCustomise() {
           </label>
         ))}
       </div>
+
+      <div className="p-4">
+        <label htmlFor="barcount" className="block mb-2 font-medium">
+          Bar Count:
+        </label>
+
+        <select
+          id="barcount"
+          name="barcount"
+          onChange={(e) => dispatch(setBarCount( e.target.value ))}
+          className="border p-2 rounded"
+        >
+          <option value="low">low</option>
+          <option value="high">high</option>
+        </select>
+      </div>
+
 
       <div className="flex flex-col sm:flex-row gap-3 mt-4">
         <button

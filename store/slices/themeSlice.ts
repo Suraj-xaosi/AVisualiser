@@ -12,6 +12,7 @@ export interface ThemeState {
   popupBgColor: string;
   popupTextColor: string;
   popupButtonColor: string;
+ 
 }
 
 // Replaces the old #ff0000 dev-scaffolding defaults with a real theme.
@@ -26,6 +27,7 @@ export const defaultTheme: ThemeState = {
   popupBgColor: "#1B2B44",
   popupTextColor: "#EDF2FF",
   popupButtonColor: "#8B5CF6",
+  
 };
 
 const themeSlice = createSlice({

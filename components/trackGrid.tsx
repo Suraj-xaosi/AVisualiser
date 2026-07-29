@@ -2,13 +2,14 @@
 "use client";
 
 import Image from "next/image";
-import { useAppDispatch } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { addInList } from "@/store/slices/playlistSlice";
 import { setTrack } from "@/store/slices/playerSlice";
 import type { Track } from "@/lib/types";
 
 export default function TrackGrid({ tracks }: { tracks: Track[] }) {
   const dispatch = useAppDispatch();
+  const theme = useAppSelector((state) => state.theme);
 
   const addToPlaylist = (track: Track) => dispatch(addInList(track));
 
@@ -22,9 +23,13 @@ export default function TrackGrid({ tracks }: { tracks: Track[] }) {
       {tracks.map((track) => (
         <div
           key={track.id}
-          className="rounded-xl bg-neutral-900 p-3 flex flex-col gap-2 focus-within:ring-2 focus-within:ring-violet-400"
+          className="rounded-xl p-3 flex flex-col gap-2 focus-within:ring-2"
+          style={{ background: theme.listColor, color: theme.listTextColor }}
         >
-          <div className="aspect-square w-full rounded-lg overflow-hidden bg-neutral-800 relative">
+          <div
+            className="aspect-square w-full rounded-lg overflow-hidden relative"
+            style={{ background: theme.sidebarBgColor }}
+          >
             {track.coverUrl ? (
               <Image
                 src={track.coverUrl}
@@ -46,13 +51,15 @@ export default function TrackGrid({ tracks }: { tracks: Track[] }) {
           <div className="flex gap-2 mt-auto">
             <button
               onClick={() => playNow(track)}
-              className="flex-1 text-xs font-semibold rounded-lg py-2 bg-violet-500 hover:bg-violet-400 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-300"
+              className="flex-1 text-xs font-semibold rounded-lg py-2 transition hover:brightness-110 focus:outline-none focus-visible:ring-2"
+              style={{ background: theme.buttonBgColor, color: theme.textColor }}
             >
-              add to playlist 
+              Play 
             </button>
             <button
               onClick={() => addToPlaylist(track)}
-              className="flex-1 text-xs font-semibold rounded-lg py-2 bg-neutral-800 hover:bg-neutral-700 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-300"
+              className="flex-1 text-xs font-semibold rounded-lg py-2 transition hover:brightness-110 focus:outline-none focus-visible:ring-2"
+              style={{ background: theme.buttonBgColor + "CC", color: theme.textColor }}
             >
               Add to queue
             </button>
