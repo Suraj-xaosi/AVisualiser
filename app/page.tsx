@@ -1,7 +1,6 @@
-// app/page.tsx
+
 "use client";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 export default function WelcomePage() {
   const router = useRouter();
@@ -32,12 +31,6 @@ export default function WelcomePage() {
       >
         Start
       </button>
-      <Link
-        href="/library"
-        className="text-blue-100 underline text-sm mb-8 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-pink-300 rounded"
-      >
-        Browse the online library
-      </Link>
       <div className="text-blue-100 text-sm mt-2">
         Made for music lovers, by music lover.
       </div>

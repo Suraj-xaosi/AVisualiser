@@ -1,4 +1,4 @@
-// lib/manifest.ts
+
 import type { Track } from "./types";
 
 // Set NEXT_PUBLIC_CDN_MANIFEST_URL in .env.local to  manifest.json URL,
