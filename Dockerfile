@@ -9,8 +9,8 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-ARG NEXT_PUBLIC_CDN_URL
-ENV NEXT_PUBLIC_CDN_URL=$NEXT_PUBLIC_CDN_URL
+ARG NEXT_PUBLIC_CDN_MANIFEST_URL
+ENV NEXT_PUBLIC_CDN_MANIFEST_URL=$NEXT_PUBLIC_CDN_MANIFEST_URL
 RUN npm run build
 
 # Stage 3: Runtime image
