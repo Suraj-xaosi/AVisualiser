@@ -30,7 +30,7 @@ export default function RootLayout({
         className={`${cinzel.className} ${geistMono.variable} antialiased`}
       >
         <script
-  src="https://web-anly-web.vercel.app/script.js"
+  src="https://webanly-dashboard.vercel.app/script.js"
   data-domain-name="funavisualiser.onrender.com305"
   data-api-key="5908a839-96cf-4ac9-b33e-d7acd1b592e6">
 </script>
