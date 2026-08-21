@@ -31,8 +31,8 @@ export default function RootLayout({
       >
         <script
   src="https://webanly-dashboard.vercel.app/script.js"
-  data-domain-name="funavisualiser.onrender.com305"
-  data-api-key="5908a839-96cf-4ac9-b33e-d7acd1b592e6">
+  data-domain-name="funworkcycle-dashboard.render.com738"
+  data-api-key="3a342f65-a05c-450e-95ca-ddb3bc5c3897">
 </script>
         
         <StoreProvider>
