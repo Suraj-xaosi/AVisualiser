@@ -64,3 +64,7 @@ npm start
 Made for people who love music and want to see it in a whole new way. Happy visualizing! 🎵
 
 
+![alt text](<Screenshot 2026-08-22 140752.png>)
+![alt text](<Screenshot 2026-08-22 140815.png>)
+![alt text](<Screenshot 2026-08-22 140933.png>)
+![alt text](<Screenshot 2026-08-22 140836.png>)
