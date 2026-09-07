@@ -3,6 +3,7 @@
 A web app that turns your music into moving, colorful visuals. Play a song and watch animated bars dance to the beat in real time.
 
 Live demo: https://avisualiser.onrender.com/
+DEMO VIDEO: https://youtu.be/_6fkKXc_KuY
 
 ## What it does
 
