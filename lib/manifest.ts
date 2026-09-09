@@ -17,7 +17,10 @@ export type ManifestEntry = {
 export async function fetchManifest(): Promise<Track[]> {
   if (!MANIFEST_URL) return [];
   try {
-    const res = await fetch(MANIFEST_URL, { next: { revalidate: 3600 } });
+    const separator = MANIFEST_URL.includes("?") ? "&" : "?";
+    const res = await fetch(`${MANIFEST_URL}${separator}v=${Date.now()}`, {
+      cache: "no-store",
+    });
     if (!res.ok) return [];
     const entries: ManifestEntry[] = await res.json();
     return entries.map((entry) => ({ ...entry, source: "online" as const }));
