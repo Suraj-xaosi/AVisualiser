@@ -29,10 +29,11 @@ export default function RootLayout({
       <body
         className={`${cinzel.className} ${geistMono.variable} antialiased`}
       >
-        <script
+       <script
   src="https://webanly-dashboard.vercel.app/script.js"
-  data-domain-name="funavisualiser.onrender.com654"
-  data-api-key="87f3dd17-732b-4e22-a3b7-f82903d9b056">
+  data-collect-api-url="https://webanly.onrender.com/collect"
+  data-domain-name="avisualiser.onrender.com757"
+  data-api-key="eb0b4f31-3fda-4e45-a0c5-5506d2e04504">
 </script>
         
         <StoreProvider>
